@@ -1,5 +1,5 @@
 def find(phrase, index):
-    words = phrase.lower().split()
+    words = phrase.split()
     if not words:
         print("Please enter at least one word.")
         return
@@ -17,9 +17,18 @@ def find(phrase, index):
     common_pages = set.intersection(*page_sets)
 
     if common_pages:
+        # Score each page by summing word frequencies
+        scores = {}
+        for page in common_pages:
+            score = sum(index[word][page] for word in words)
+            scores[page] = score
+
+        # Sort pages by score descending
+        ranked_pages = sorted(scores.items(), key=lambda item: item[1], reverse=True)
+
         print(f"\nAll links are relative to https://quotes.toscrape.com")
         print(f"\nPages containing all words '{' '.join(words)}':")
-        for page in sorted(common_pages):
-            print(f"- {page}")
+        for i, (page, score) in enumerate(ranked_pages, 1):
+            print(f"{i}. {page} → score: {score}")
     else:
         print("No page contains all the given words.")
